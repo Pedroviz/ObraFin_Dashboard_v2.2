@@ -1,12 +1,21 @@
 import { NavLink } from "react-router-dom";
-import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut } from "lucide-react";
+import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut, Eye, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useEffect } from "react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { role, loading } = useUserRole();
+
+  useEffect(() => {
+    if (!loading && role === 'cliente') {
+      navigate('/cliente');
+    }
+  }, [role, loading, navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -21,6 +30,14 @@ const Sidebar = () => {
     { to: "/receitas", icon: TrendingUp, label: "Receitas" },
   ];
 
+  if (loading) {
+    return (
+      <div className="w-64 bg-sidebar border-r border-sidebar-border h-screen flex items-center justify-center">
+        <div className="text-sm text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-64 bg-sidebar border-r border-sidebar-border h-screen flex flex-col">
       <div className="p-6 border-b border-sidebar-border">
@@ -29,8 +46,8 @@ const Sidebar = () => {
             <Building2 className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-sidebar-foreground">Dashboard</h1>
-            <p className="text-xs text-muted-foreground">Financeiro</p>
+            <h1 className="font-bold text-lg text-sidebar-foreground">Engetech</h1>
+            <p className="text-xs text-muted-foreground">Painel Admin</p>
           </div>
         </div>
       </div>
@@ -53,6 +70,20 @@ const Sidebar = () => {
             <span>{item.label}</span>
           </NavLink>
         ))}
+        
+        <NavLink
+          to="/cliente"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+            }`
+          }
+        >
+          <Eye className="h-5 w-5" />
+          <span>Visualizar como Cliente</span>
+        </NavLink>
       </nav>
 
       <div className="p-4 border-t border-sidebar-border">

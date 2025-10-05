@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Edit2, Trash2 } from "lucide-react";
+import { Plus, Edit2, Trash2, UserPlus } from "lucide-react";
 
 interface Obra {
   id: string;
@@ -18,19 +18,29 @@ interface Obra {
   data_inicio: string;
   descricao: string;
   status: string;
+  client_id: string | null;
+}
+
+interface Cliente {
+  id: string;
+  nome: string;
+  email: string;
 }
 
 const Obras = () => {
   const [obras, setObras] = useState<Obra[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [clientDialogOpen, setClientDialogOpen] = useState(false);
+  const [selectedObra, setSelectedObra] = useState<string | null>(null);
   const [editingObra, setEditingObra] = useState<Obra | null>(null);
 
   useEffect(() => {
-    loadObras();
+    loadData();
   }, []);
 
-  const loadObras = async () => {
+  const loadData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -43,6 +53,14 @@ const Obras = () => {
 
       if (error) throw error;
       setObras(data || []);
+
+      // Buscar todos os clientes
+      const { data: clientesData } = await supabase
+        .from('profiles')
+        .select('id, nome, email')
+        .neq('id', user.id);
+
+      setClientes(clientesData || []);
     } catch (error) {
       console.error('Erro ao carregar obras:', error);
     } finally {
@@ -86,10 +104,33 @@ const Obras = () => {
 
       setDialogOpen(false);
       setEditingObra(null);
-      loadObras();
+      loadData();
     } catch (error: any) {
       toast({
         title: "Erro",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleVincularCliente = async (clientId: string) => {
+    if (!selectedObra) return;
+
+    try {
+      const { error } = await supabase
+        .from('obras')
+        .update({ client_id: clientId })
+        .eq('id', selectedObra);
+
+      if (error) throw error;
+      toast({ title: "Cliente vinculado com sucesso!" });
+      setClientDialogOpen(false);
+      setSelectedObra(null);
+      loadData();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao vincular cliente",
         description: error.message,
         variant: "destructive"
       });
@@ -107,7 +148,7 @@ const Obras = () => {
 
       if (error) throw error;
       toast({ title: "Obra excluída com sucesso!" });
-      loadObras();
+      loadData();
     } catch (error: any) {
       toast({
         title: "Erro ao excluir",
@@ -132,6 +173,12 @@ const Obras = () => {
       cancelada: 'bg-destructive/10 text-destructive'
     };
     return colors[status as keyof typeof colors] || '';
+  };
+
+  const getClienteNome = (clientId: string | null) => {
+    if (!clientId) return null;
+    const cliente = clientes.find(c => c.id === clientId);
+    return cliente?.nome;
   };
 
   if (loading) {
@@ -252,6 +299,12 @@ const Obras = () => {
                   {obra.status}
                 </span>
               </div>
+              {getClienteNome(obra.client_id) && (
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  <UserPlus className="h-3 w-3" />
+                  Cliente: {getClienteNome(obra.client_id)}
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
@@ -272,7 +325,7 @@ const Obras = () => {
                   <p className="text-sm">{obra.descricao}</p>
                 </div>
               )}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 pt-2 flex-wrap">
                 <Button
                   size="sm"
                   variant="outline"
@@ -283,6 +336,17 @@ const Obras = () => {
                 >
                   <Edit2 className="h-3 w-3 mr-1" />
                   Editar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedObra(obra.id);
+                    setClientDialogOpen(true);
+                  }}
+                >
+                  <UserPlus className="h-3 w-3 mr-1" />
+                  Cliente
                 </Button>
                 <Button
                   size="sm"
@@ -309,6 +373,37 @@ const Obras = () => {
           </CardContent>
         </Card>
       )}
+
+      <Dialog open={clientDialogOpen} onOpenChange={setClientDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Vincular Cliente à Obra</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {clientes.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">
+                Nenhum cliente disponível
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {clientes.map((cliente) => (
+                  <Button
+                    key={cliente.id}
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => handleVincularCliente(cliente.id)}
+                  >
+                    <div className="text-left">
+                      <div className="font-medium">{cliente.nome}</div>
+                      <div className="text-sm text-muted-foreground">{cliente.email}</div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
