@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut, Eye, BookOpen } from "lucide-react";
+import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut, Eye, BookOpen, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,7 @@ const Sidebar = () => {
   const navItems = [
     { to: "/", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/obras", icon: Briefcase, label: "Obras" },
+    { to: "/clientes", icon: Users, label: "Clientes" },
     { to: "/diario", icon: BookOpen, label: "Diário de Obra" },
     { to: "/gastos", icon: TrendingDown, label: "Gastos" },
     { to: "/receitas", icon: TrendingUp, label: "Receitas" },
