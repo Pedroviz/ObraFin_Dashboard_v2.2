@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut, Eye, Users } from "lucide-react";
+import { Building2, LayoutDashboard, Briefcase, TrendingDown, TrendingUp, LogOut, Eye, BookOpen } from "lucide-react";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEffect } from "react";
 
@@ -19,13 +19,14 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast({ title: "Logout realizado com sucesso" });
+    toast.success("Logout realizado com sucesso");
     navigate("/auth");
   };
 
   const navItems = [
     { to: "/", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/obras", icon: Briefcase, label: "Obras" },
+    { to: "/diario", icon: BookOpen, label: "Diário de Obra" },
     { to: "/gastos", icon: TrendingDown, label: "Gastos" },
     { to: "/receitas", icon: TrendingUp, label: "Receitas" },
   ];
@@ -39,30 +40,30 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-64 bg-sidebar border-r border-sidebar-border h-screen flex flex-col">
-      <div className="p-6 border-b border-sidebar-border">
+    <div className="w-64 bg-card border-r border-border h-screen flex flex-col shadow-soft">
+      <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
+          <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-soft">
+            <Building2 className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-sidebar-foreground">Engetech</h1>
+            <h1 className="font-bold text-xl text-foreground">ObraFin</h1>
             <p className="text-xs text-muted-foreground">Painel Admin</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-2">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.to === "/"}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  ? "bg-primary text-primary-foreground shadow-soft font-medium"
+                  : "text-foreground hover:bg-secondary hover:shadow-soft-inset"
               }`
             }
           >
@@ -74,10 +75,10 @@ const Sidebar = () => {
         <NavLink
           to="/cliente"
           className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
               isActive
-                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                ? "bg-accent text-accent-foreground shadow-soft font-medium"
+                : "text-foreground hover:bg-secondary hover:shadow-soft-inset"
             }`
           }
         >
@@ -86,10 +87,10 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-border">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent/50"
+          className="w-full justify-start gap-3 text-foreground hover:bg-destructive/10 hover:text-destructive rounded-xl transition-all"
           onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" />

@@ -8,51 +8,59 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 15% 97%;
-    --foreground: 220 10% 15%;
+    /* Soft UI Color Palette */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 10% 15%;
+    --card-foreground: 215 25% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 15%;
+    --popover-foreground: 215 25% 16%;
 
-    --primary: 200 100% 35%;
+    /* Primary: Verde escuro #1B4332 */
+    --primary: 152 45% 19%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-light: 200 100% 45%;
-    --primary-dark: 200 100% 25%;
+    /* Primary variants */
+    --primary-light: 152 45% 70%;
+    --primary-dark: 152 45% 12%;
 
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 10% 15%;
+    /* Secondary: Cinza suave */
+    --secondary: 210 14% 93%;
+    --secondary-foreground: 215 25% 16%;
 
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 210 14% 95%;
+    --muted-foreground: 215 15% 50%;
 
-    --accent: 200 100% 95%;
-    --accent-foreground: 200 100% 30%;
+    /* Accent: Verde claro #95D5B2 */
+    --accent: 152 48% 71%;
+    --accent-foreground: 152 45% 19%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
-    --success: 160 100% 35%;
-    --success-foreground: 0 0% 100%;
+    --success: 152 48% 71%;
+    --success-foreground: 152 45% 19%;
     
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 90%;
-    --ring: 200 100% 35%;
+    --border: 210 14% 89%;
+    --input: 210 14% 93%;
+    --ring: 152 45% 19%;
 
     --radius: 0.75rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(200 100% 35%), hsl(200 100% 45%));
-    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 97%), hsl(220 15% 95%));
+    /* Soft UI Shadows (Neumorphism) */
+    --shadow-soft: 6px 6px 12px hsl(210 14% 82%), -6px -6px 12px hsl(0 0% 100%);
+    --shadow-soft-inset: inset 6px 6px 12px hsl(210 14% 82%), inset -6px -6px 12px hsl(0 0% 100%);
+    --shadow-sm: 2px 2px 4px hsl(210 14% 85%), -2px -2px 4px hsl(0 0% 100%);
+    --shadow-md: 4px 4px 8px hsl(210 14% 82%), -4px -4px 8px hsl(0 0% 100%);
+    --shadow-lg: 8px 8px 16px hsl(210 14% 82%), -8px -8px 16px hsl(0 0% 100%);
     
-    --shadow-sm: 0 1px 2px 0 hsl(220 10% 15% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 10% 15% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(220 10% 15% / 0.1);
+    --gradient-primary: linear-gradient(135deg, hsl(152 45% 19%), hsl(152 48% 71%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 20% 98%), hsl(210 14% 95%));
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -67,49 +75,52 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 220 15% 8%;
-    --foreground: 220 10% 95%;
+    --background: 215 25% 12%;
+    --foreground: 210 20% 95%;
 
-    --card: 220 15% 10%;
-    --card-foreground: 220 10% 95%;
+    --card: 215 25% 15%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 220 15% 10%;
-    --popover-foreground: 220 10% 95%;
+    --popover: 215 25% 15%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 200 100% 45%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 152 48% 71%;
+    --primary-foreground: 215 25% 12%;
     
-    --primary-light: 200 100% 55%;
-    --primary-dark: 200 100% 35%;
+    --primary-light: 152 48% 80%;
+    --primary-dark: 152 48% 60%;
 
-    --secondary: 220 15% 15%;
-    --secondary-foreground: 220 10% 95%;
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 210 20% 95%;
 
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 215 25% 18%;
+    --muted-foreground: 210 15% 65%;
 
-    --accent: 220 15% 15%;
-    --accent-foreground: 200 100% 45%;
+    --accent: 152 48% 71%;
+    --accent-foreground: 215 25% 12%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
     
-    --success: 160 100% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 152 48% 71%;
+    --success-foreground: 215 25% 12%;
     
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 18%;
-    --ring: 200 100% 45%;
+    --border: 215 25% 22%;
+    --input: 215 25% 18%;
+    --ring: 152 48% 71%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(200 100% 35%), hsl(200 100% 45%));
-    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 10%), hsl(220 15% 8%));
+    --gradient-primary: linear-gradient(135deg, hsl(152 45% 19%), hsl(152 48% 71%));
+    --gradient-subtle: linear-gradient(180deg, hsl(215 25% 15%), hsl(215 25% 12%));
     
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5);
+    /* Dark mode soft shadows */
+    --shadow-soft: 6px 6px 12px hsl(215 25% 8%), -6px -6px 12px hsl(215 25% 18%);
+    --shadow-soft-inset: inset 6px 6px 12px hsl(215 25% 8%), inset -6px -6px 12px hsl(215 25% 18%);
+    --shadow-sm: 2px 2px 4px hsl(215 25% 8%), -2px -2px 4px hsl(215 25% 18%);
+    --shadow-md: 4px 4px 8px hsl(215 25% 8%), -4px -4px 8px hsl(215 25% 18%);
+    --shadow-lg: 8px 8px 16px hsl(215 25% 8%), -8px -8px 16px hsl(215 25% 18%);
 
     --sidebar-background: 220 15% 10%;
     --sidebar-foreground: 220 10% 85%;
@@ -128,6 +139,39 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer utilities {
+  /* Soft UI Card Effects */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-soft-inset {
+    box-shadow: var(--shadow-soft-inset);
+  }
+  
+  .shadow-soft-hover {
+    transition: var(--transition-smooth);
+  }
+  
+  .shadow-soft-hover:hover {
+    box-shadow: 4px 4px 8px hsl(210 14% 82%), -4px -4px 8px hsl(0 0% 100%);
+    transform: translateY(-3px);
+  }
+  
+  .dark .shadow-soft-hover:hover {
+    box-shadow: 4px 4px 8px hsl(215 25% 8%), -4px -4px 8px hsl(215 25% 18%);
+  }
+  
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
   }
 }

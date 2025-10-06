@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Obras from "./pages/Obras";
 import Gastos from "./pages/Gastos";
 import Receitas from "./pages/Receitas";
+import DiarioObra from "./pages/DiarioObra";
 import ClienteDashboard from "./pages/ClienteDashboard";
 import ClienteObraDetalhes from "./pages/ClienteObraDetalhes";
 import NotFound from "./pages/NotFound";
@@ -70,6 +71,16 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <Obras />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/diario"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <DiarioObra />
                 </AppLayout>
               </ProtectedRoute>
             }
