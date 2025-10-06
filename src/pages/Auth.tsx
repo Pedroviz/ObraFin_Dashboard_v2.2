@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Building2, Mail, Lock, User, Loader2 } from "lucide-react";
+import { signUpSchema, signInSchema } from "@/lib/validation";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -34,6 +35,16 @@ const Auth = () => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
+    // Validate input
+    try {
+      signUpSchema.parse({ nome, email, password });
+    } catch (error: any) {
+      const firstError = error.errors?.[0];
+      toast.error(firstError?.message || "Dados inválidos");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -58,6 +69,16 @@ const Auth = () => {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
+    // Validate input
+    try {
+      signInSchema.parse({ email, password });
+    } catch (error: any) {
+      const firstError = error.errors?.[0];
+      toast.error(firstError?.message || "Dados inválidos");
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email,

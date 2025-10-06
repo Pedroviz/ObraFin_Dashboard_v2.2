@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Mail, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { clienteSchema } from "@/lib/validation";
 
 interface Cliente {
   id: string;
@@ -38,11 +39,25 @@ const Clientes = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Buscar todos os perfis exceto o do admin atual
+      // Buscar apenas clientes vinculados às obras do admin (previne email harvesting)
+      const { data: obrasData } = await supabase
+        .from('obras')
+        .select('client_id')
+        .eq('user_id', user.id)
+        .not('client_id', 'is', null);
+
+      if (!obrasData || obrasData.length === 0) {
+        setClientes([]);
+        setLoading(false);
+        return;
+      }
+
+      const clientIds = [...new Set(obrasData.map(o => o.client_id))];
+
       const { data: clientesData, error: clientesError } = await supabase
         .from('profiles')
         .select('id, nome, email, created_at')
-        .neq('id', user.id)
+        .in('id', clientIds)
         .order('created_at', { ascending: false });
 
       if (clientesError) throw clientesError;
@@ -85,6 +100,19 @@ const Clientes = () => {
     const email = formData.get('email') as string;
     const senha = formData.get('senha') as string;
 
+    // Validate input
+    try {
+      clienteSchema.parse({ nome, email, senha: senha || undefined });
+    } catch (error: any) {
+      const firstError = error.errors?.[0];
+      toast({
+        title: "Dados inválidos",
+        description: firstError?.message || "Verifique os dados informados",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       if (editingCliente) {
         // Atualizar cliente existente
@@ -105,11 +133,12 @@ const Clientes = () => {
           return;
         }
 
-        // Criar usuário no Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // Criar usuário no Supabase Auth (role 'cliente' atribuída automaticamente pelo trigger)
+        const { error: authError } = await supabase.auth.signUp({
           email,
           password: senha,
           options: {
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
               nome: nome
             }
@@ -117,18 +146,6 @@ const Clientes = () => {
         });
 
         if (authError) throw authError;
-
-        if (authData.user) {
-          // Atribuir role de cliente
-          const { error: roleError } = await supabase
-            .from('user_roles')
-            .insert({
-              user_id: authData.user.id,
-              role: 'cliente'
-            });
-
-          if (roleError) throw roleError;
-        }
 
         toast({ title: "Cliente cadastrado com sucesso!" });
       }

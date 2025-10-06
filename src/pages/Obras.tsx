@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, UserPlus } from "lucide-react";
+import { obraSchema } from "@/lib/validation";
 
 interface Obra {
   id: string;
@@ -54,13 +55,19 @@ const Obras = () => {
       if (error) throw error;
       setObras(data || []);
 
-      // Buscar todos os clientes
-      const { data: clientesData } = await supabase
-        .from('profiles')
-        .select('id, nome, email')
-        .neq('id', user.id);
+      // Buscar apenas clientes que já estão vinculados a alguma obra (previne email harvesting)
+      const clientIds = [...new Set(data?.map(o => o.client_id).filter(Boolean) || [])];
+      
+      if (clientIds.length > 0) {
+        const { data: clientesData } = await supabase
+          .from('profiles')
+          .select('id, nome, email')
+          .in('id', clientIds);
 
-      setClientes(clientesData || []);
+        setClientes(clientesData || []);
+      } else {
+        setClientes([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar obras:', error);
     } finally {
@@ -80,6 +87,19 @@ const Obras = () => {
       descricao: formData.get('descricao') as string,
       status: formData.get('status') as string,
     };
+
+    // Validate input
+    try {
+      obraSchema.parse(obraData);
+    } catch (error: any) {
+      const firstError = error.errors?.[0];
+      toast({
+        title: "Dados inválidos",
+        description: firstError?.message || "Verifique os dados informados",
+        variant: "destructive"
+      });
+      return;
+    }
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
