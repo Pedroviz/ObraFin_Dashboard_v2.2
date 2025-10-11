@@ -39,20 +39,21 @@ const Clientes = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Buscar apenas clientes vinculados às obras do admin (previne email harvesting)
-      const { data: obrasData } = await supabase
-        .from('obras')
-        .select('client_id')
-        .eq('user_id', user.id)
-        .not('client_id', 'is', null);
+      // Buscar todos os usuários com role 'cliente'
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'cliente');
 
-      if (!obrasData || obrasData.length === 0) {
+      if (rolesError) throw rolesError;
+
+      const clientIds = rolesData?.map(r => r.user_id) || [];
+
+      if (clientIds.length === 0) {
         setClientes([]);
         setLoading(false);
         return;
       }
-
-      const clientIds = [...new Set(obrasData.map(o => o.client_id))];
 
       const { data: clientesData, error: clientesError } = await supabase
         .from('profiles')

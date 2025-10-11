@@ -55,8 +55,13 @@ const Obras = () => {
       if (error) throw error;
       setObras(data || []);
 
-      // Buscar apenas clientes que já estão vinculados a alguma obra (previne email harvesting)
-      const clientIds = [...new Set(data?.map(o => o.client_id).filter(Boolean) || [])];
+      // Buscar todos os clientes disponíveis (usuários com role 'cliente')
+      const { data: rolesData } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'cliente');
+
+      const clientIds = rolesData?.map(r => r.user_id) || [];
       
       if (clientIds.length > 0) {
         const { data: clientesData } = await supabase
@@ -79,6 +84,7 @@ const Obras = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    const clientId = formData.get('client_id') as string;
     const obraData = {
       nome: formData.get('nome') as string,
       valor_orcado: parseFloat(formData.get('valor_orcado') as string),
@@ -86,6 +92,7 @@ const Obras = () => {
       data_inicio: formData.get('data_inicio') as string,
       descricao: formData.get('descricao') as string,
       status: formData.get('status') as string,
+      client_id: clientId || null,
     };
 
     // Validate input
@@ -294,6 +301,23 @@ const Obras = () => {
                   rows={3}
                   defaultValue={editingObra?.descricao}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="client_id">Cliente (Opcional)</Label>
+                <Select name="client_id" defaultValue={editingObra?.client_id || ''}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Nenhum cliente</SelectItem>
+                    {clientes.map((cliente) => (
+                      <SelectItem key={cliente.id} value={cliente.id}>
+                        {cliente.nome} ({cliente.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex justify-end gap-2">
