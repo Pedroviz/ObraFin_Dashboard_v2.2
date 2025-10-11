@@ -36,3 +36,9 @@ export const financeSchema = z.object({
   data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida"),
   categoria: z.string().trim().min(1, "Categoria é obrigatória").max(50, "Categoria muito longa").optional()
 });
+
+// Categoria validation schema
+export const categoriaSchema = z.object({
+  nome: z.string().trim().min(1, "Nome é obrigatório").max(50, "Nome muito longo"),
+  tipo: z.enum(['gasto', 'receita'], { required_error: "Tipo é obrigatório" })
+});

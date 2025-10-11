@@ -26,9 +26,15 @@ interface Obra {
   nome: string;
 }
 
+interface Categoria {
+  id: string;
+  nome: string;
+}
+
 const Gastos = () => {
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [obras, setObras] = useState<Obra[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -47,6 +53,15 @@ const Gastos = () => {
         .eq('user_id', user.id);
 
       setObras(obrasData || []);
+
+      const { data: categoriasData } = await supabase
+        .from('categorias')
+        .select('id, nome')
+        .eq('user_id', user.id)
+        .eq('tipo', 'gasto')
+        .order('nome', { ascending: true });
+
+      setCategorias(categoriasData || []);
 
       const { data: gastosData } = await supabase
         .from('gastos')
@@ -119,18 +134,6 @@ const Gastos = () => {
     }).format(value);
   };
 
-  const getCategoriaLabel = (categoria: string) => {
-    const labels: Record<string, string> = {
-      materiais: 'Materiais',
-      frete: 'Frete',
-      alimentacao: 'Alimentação',
-      mao_de_obra: 'Mão de Obra',
-      equipamentos: 'Equipamentos',
-      outros: 'Outros'
-    };
-    return labels[categoria] || categoria;
-  };
-
   const totalGastos = gastos.reduce((sum, gasto) => sum + Number(gasto.valor), 0);
 
   if (loading) {
@@ -187,15 +190,20 @@ const Gastos = () => {
                   <Label htmlFor="categoria">Categoria *</Label>
                   <Select name="categoria" required>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="materiais">Materiais</SelectItem>
-                      <SelectItem value="frete">Frete</SelectItem>
-                      <SelectItem value="alimentacao">Alimentação</SelectItem>
-                      <SelectItem value="mao_de_obra">Mão de Obra</SelectItem>
-                      <SelectItem value="equipamentos">Equipamentos</SelectItem>
-                      <SelectItem value="outros">Outros</SelectItem>
+                      {categorias.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground text-center">
+                          Nenhuma categoria cadastrada
+                        </div>
+                      ) : (
+                        categorias.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.nome}>
+                            {categoria.nome}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -272,7 +280,7 @@ const Gastos = () => {
                       {new Date(gasto.data).toLocaleDateString('pt-BR')}
                     </TableCell>
                     <TableCell>{gasto.obras?.nome}</TableCell>
-                    <TableCell>{getCategoriaLabel(gasto.categoria)}</TableCell>
+                    <TableCell>{gasto.categoria}</TableCell>
                     <TableCell>{gasto.descricao}</TableCell>
                     <TableCell className="text-right font-medium text-destructive">
                       {formatCurrency(gasto.valor)}

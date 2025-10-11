@@ -7,6 +7,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Obras from "./pages/Obras";
 import Clientes from "./pages/Clientes";
+import Categorias from "./pages/Categorias";
 import Gastos from "./pages/Gastos";
 import Receitas from "./pages/Receitas";
 import DiarioObra from "./pages/DiarioObra";
@@ -92,6 +93,16 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <DiarioObra />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/categorias"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Categorias />
                 </AppLayout>
               </ProtectedRoute>
             }
